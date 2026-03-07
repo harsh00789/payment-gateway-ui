@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 
 /* ================= CONFIGURATION ================= */
-const API_BASE = 'https://payment-gateway-gaz7.onrender.com';
+const API_BASE = import.meta.env.VITE_API_BASE;
 
 /* ================= UTILITY FUNCTIONS ================= */
 const formatPrice = (price) => new Intl.NumberFormat('en-IN').format(price);
