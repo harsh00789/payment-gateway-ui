@@ -21,14 +21,102 @@ const generateIdempotencyKey = () => {
     });
 };
 
+/* ================= SVG ICONS ================= */
+const Icons = {
+    dashboard: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="4" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="11" width="7" height="10" rx="1" />
+        </svg>
+    ),
+    orders: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+    ),
+    payments: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+    ),
+    webhooks: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 01-3.46 0" />
+        </svg>
+    ),
+    fraud: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+        </svg>
+    ),
+    settings: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z" />
+        </svg>
+    ),
+    // stat icons
+    box: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+            <line x1="12" y1="22.08" x2="12" y2="12" />
+        </svg>
+    ),
+    creditCard: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+        </svg>
+    ),
+    checkCircle: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+            <polyline points="22 4 12 14.01 9 11.01" />
+        </svg>
+    ),
+    xCircle: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="15" y1="9" x2="9" y2="15" />
+            <line x1="9" y1="9" x2="15" y2="15" />
+        </svg>
+    ),
+    bell: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9" />
+            <path d="M13.73 21a2 2 0 01-3.46 0" />
+        </svg>
+    ),
+    flag: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+            <line x1="4" y1="22" x2="4" y2="15" />
+        </svg>
+    ),
+    logo: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+        </svg>
+    ),
+};
+
 /* ================= NAVIGATION CONFIG ================= */
 const NAV_ITEMS = [
-    { id: 'dashboard', label: 'Dashboard', icon: '📊' },
-    { id: 'orders', label: 'Orders', icon: '📦' },
-    { id: 'payments', label: 'Payments', icon: '💳' },
-    { id: 'webhooks', label: 'Webhooks', icon: '🔔' },
-    { id: 'fraud', label: 'Fraud Logs', icon: '🚨' },
-    { id: 'settings', label: 'Settings', icon: '⚙️' },
+    { id: 'dashboard', label: 'Dashboard', icon: Icons.dashboard },
+    { id: 'orders', label: 'Orders', icon: Icons.orders },
+    { id: 'payments', label: 'Payments', icon: Icons.payments },
+    { id: 'webhooks', label: 'Webhooks', icon: Icons.webhooks },
+    { id: 'fraud', label: 'Fraud Logs', icon: Icons.fraud },
+    { id: 'settings', label: 'Settings', icon: Icons.settings },
 ];
 
 /* ================= TOAST COMPONENT ================= */
@@ -46,8 +134,8 @@ function Sidebar({ activePage, onNavigate }) {
     return (
         <aside className="sidebar">
             <div className="sidebar-logo" onClick={() => onNavigate('dashboard')}>
-                <div className="sidebar-logo-icon">⚡</div>
-                <span className="sidebar-logo-text">MiniPay</span>
+                <div className="sidebar-logo-icon">{Icons.logo}</div>
+                <span className="sidebar-logo-text">PayNova</span>
             </div>
             <nav className="sidebar-nav">
                 {NAV_ITEMS.map(item => (
@@ -63,7 +151,7 @@ function Sidebar({ activePage, onNavigate }) {
                 ))}
             </nav>
             <div className="sidebar-footer">
-                MiniPay v1.0 · © 2026
+                PayNova v1.0 · © 2026
             </div>
         </aside>
     );
@@ -117,7 +205,6 @@ function DashboardPage({ stats, loading }) {
     React.useEffect(() => {
         if (typeof Chart === 'undefined') return;
 
-        // Bar chart — payments per day (mock data, replace with API if available)
         if (barChartRef.current) {
             if (barInstanceRef.current) barInstanceRef.current.destroy();
             const ctx = barChartRef.current.getContext('2d');
@@ -128,10 +215,10 @@ function DashboardPage({ stats, loading }) {
                     datasets: [{
                         label: 'Payments',
                         data: [12, 19, 8, 15, 22, 10, 14],
-                        backgroundColor: 'rgba(99, 102, 241, 0.6)',
-                        borderColor: 'rgba(99, 102, 241, 1)',
+                        backgroundColor: 'rgba(45, 212, 168, 0.5)',
+                        borderColor: 'rgba(45, 212, 168, 0.8)',
                         borderWidth: 1,
-                        borderRadius: 8,
+                        borderRadius: 4,
                     }]
                 },
                 options: {
@@ -139,14 +226,13 @@ function DashboardPage({ stats, loading }) {
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.04)' }, ticks: { color: '#64748b' } }
+                        x: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5b6478' } },
+                        y: { grid: { color: 'rgba(255,255,255,0.03)' }, ticks: { color: '#5b6478' } }
                     }
                 }
             });
         }
 
-        // Pie chart — success vs failed
         if (pieChartRef.current) {
             if (pieInstanceRef.current) pieInstanceRef.current.destroy();
             const ctx2 = pieChartRef.current.getContext('2d');
@@ -156,7 +242,7 @@ function DashboardPage({ stats, loading }) {
                     labels: ['Success', 'Failed', 'Processing'],
                     datasets: [{
                         data: [stats.totalPayments || 65, stats.failedPayments || 12, 8],
-                        backgroundColor: ['#10b981', '#ef4444', '#f59e0b'],
+                        backgroundColor: ['#22c55e', '#ef4444', '#eab308'],
                         borderWidth: 0,
                     }]
                 },
@@ -166,7 +252,7 @@ function DashboardPage({ stats, loading }) {
                     plugins: {
                         legend: {
                             position: 'bottom',
-                            labels: { color: '#94a3b8', padding: 16, font: { size: 12 } }
+                            labels: { color: '#8b95a9', padding: 14, font: { size: 12 } }
                         }
                     }
                 }
@@ -187,14 +273,14 @@ function DashboardPage({ stats, loading }) {
             </div>
 
             <div className="stats-grid">
-                <StatCard label="Total Orders" value={loading ? '...' : stats.totalOrders ?? 0} icon="📦" color="purple" sub="All time" />
-                <StatCard label="Total Payments" value={loading ? '...' : stats.totalPayments ?? 0} icon="💳" color="cyan" sub="Processed" />
-                <StatCard label="Success Rate" value={loading ? '...' : `${stats.successRate ?? 0}%`} icon="✅" color="green" sub="Of all payments" />
+                <StatCard label="Total Orders" value={loading ? '...' : stats.totalOrders ?? 0} icon={Icons.box} color="purple" sub="All time" />
+                <StatCard label="Total Payments" value={loading ? '...' : stats.totalPayments ?? 0} icon={Icons.creditCard} color="cyan" sub="Processed" />
+                <StatCard label="Success Rate" value={loading ? '...' : `${stats.successRate ?? 0}%`} icon={Icons.checkCircle} color="green" sub="Of all payments" />
             </div>
             <div className="stats-grid">
-                <StatCard label="Failed Payments" value={loading ? '...' : stats.failedPayments ?? 0} icon="❌" color="red" sub="Needs attention" />
-                <StatCard label="Webhooks Sent" value={loading ? '...' : stats.webhooksSent ?? 0} icon="🔔" color="yellow" sub="Delivery attempts" />
-                <StatCard label="Fraud Flags" value={loading ? '...' : stats.fraudFlags ?? 0} icon="🚩" color="pink" sub="Flagged transactions" />
+                <StatCard label="Failed Payments" value={loading ? '...' : stats.failedPayments ?? 0} icon={Icons.xCircle} color="red" sub="Needs attention" />
+                <StatCard label="Webhooks Sent" value={loading ? '...' : stats.webhooksSent ?? 0} icon={Icons.bell} color="yellow" sub="Delivery attempts" />
+                <StatCard label="Fraud Flags" value={loading ? '...' : stats.fraudFlags ?? 0} icon={Icons.flag} color="pink" sub="Flagged transactions" />
             </div>
 
             <div className="charts-grid">
@@ -295,12 +381,12 @@ function OrdersPage({ showToast }) {
                 </div>
                 <div className="table-wrapper">
                     {loading ? (
-                        <div style={{ padding: '20px' }}>
+                        <div style={{ padding: '16px' }}>
                             {[1, 2, 3].map(i => <div key={i} className="skeleton skeleton-row" />)}
                         </div>
                     ) : orders.length === 0 ? (
                         <div className="empty-state">
-                            <div className="empty-state-icon">📦</div>
+                            <div className="empty-state-icon">{Icons.box}</div>
                             <p>No orders yet</p>
                             <small>Create your first order to get started</small>
                         </div>
@@ -319,7 +405,7 @@ function OrdersPage({ showToast }) {
                             <tbody>
                                 {orders.map((o, i) => (
                                     <tr key={o.id || i}>
-                                        <td style={{ fontWeight: 600, color: '#f1f5f9' }}>{o.id || o.orderId || `ord_${i}`}</td>
+                                        <td style={{ fontWeight: 600, color: '#e2e8f0' }}>{o.id || o.orderId || `ord_${i}`}</td>
                                         <td>₹{formatPrice(o.amount)}</td>
                                         <td>{o.currency || 'INR'}</td>
                                         <td><StatusBadge status={o.status || 'CREATED'} /></td>
@@ -434,12 +520,12 @@ function PaymentsPage() {
             <div className="table-card">
                 <div className="table-wrapper">
                     {loading ? (
-                        <div style={{ padding: '20px' }}>
+                        <div style={{ padding: '16px' }}>
                             {[1, 2, 3].map(i => <div key={i} className="skeleton skeleton-row" />)}
                         </div>
                     ) : filtered.length === 0 ? (
                         <div className="empty-state">
-                            <div className="empty-state-icon">💳</div>
+                            <div className="empty-state-icon">{Icons.creditCard}</div>
                             <p>No payments found</p>
                             <small>{filter !== 'ALL' ? `No ${filter} payments` : 'Process an order to see payments here'}</small>
                         </div>
@@ -458,7 +544,7 @@ function PaymentsPage() {
                             <tbody>
                                 {filtered.map((p, i) => (
                                     <tr key={p.id || i}>
-                                        <td style={{ fontWeight: 600, color: '#f1f5f9' }}>{p.id || p.paymentId || `pay_${i}`}</td>
+                                        <td style={{ fontWeight: 600, color: '#e2e8f0' }}>{p.id || p.paymentId || `pay_${i}`}</td>
                                         <td>{p.order?.id || p.orderId || '—'}</td>
                                         <td>₹{formatPrice(p.order?.amount ?? p.amount)}</td>
                                         <td><StatusBadge status={p.status || 'PROCESSING'} /></td>
@@ -507,12 +593,12 @@ function WebhooksPage() {
                 </div>
                 <div className="table-wrapper">
                     {loading ? (
-                        <div style={{ padding: '20px' }}>
+                        <div style={{ padding: '16px' }}>
                             {[1, 2, 3].map(i => <div key={i} className="skeleton skeleton-row" />)}
                         </div>
                     ) : webhooks.length === 0 ? (
                         <div className="empty-state">
-                            <div className="empty-state-icon">🔔</div>
+                            <div className="empty-state-icon">{Icons.bell}</div>
                             <p>No webhook logs</p>
                             <small>Webhook events will appear here after payments</small>
                         </div>
@@ -531,7 +617,7 @@ function WebhooksPage() {
                             <tbody>
                                 {webhooks.map((w, i) => (
                                     <tr key={w.id || i}>
-                                        <td style={{ fontWeight: 600, color: '#f1f5f9' }}>{w.event || w.eventType || '—'}</td>
+                                        <td style={{ fontWeight: 600, color: '#e2e8f0' }}>{w.event || w.eventType || '—'}</td>
                                         <td>{w.paymentId || '—'}</td>
                                         <td style={{ maxWidth: 200, overflow: 'hidden', textOverflow: 'ellipsis' }}>{w.url || w.webhookUrl || '—'}</td>
                                         <td><StatusBadge status={String(w.delivered ?? w.isDelivered ?? '—')} /></td>
@@ -580,12 +666,12 @@ function FraudPage() {
                 </div>
                 <div className="table-wrapper">
                     {loading ? (
-                        <div style={{ padding: '20px' }}>
+                        <div style={{ padding: '16px' }}>
                             {[1, 2, 3].map(i => <div key={i} className="skeleton skeleton-row" />)}
                         </div>
                     ) : fraudEvents.length === 0 ? (
                         <div className="empty-state">
-                            <div className="empty-state-icon">🚨</div>
+                            <div className="empty-state-icon">{Icons.fraud}</div>
                             <p>No fraud events</p>
                             <small>Suspicious transactions will appear here</small>
                         </div>
@@ -602,7 +688,7 @@ function FraudPage() {
                             <tbody>
                                 {fraudEvents.map((f, i) => (
                                     <tr key={f.id || i}>
-                                        <td style={{ fontWeight: 600, color: '#f1f5f9' }}>{f.paymentId || `pay_${i}`}</td>
+                                        <td style={{ fontWeight: 600, color: '#e2e8f0' }}>{f.paymentId || `pay_${i}`}</td>
                                         <td>₹{formatPrice(f.amount)}</td>
                                         <td>{f.reason || '—'}</td>
                                         <td><StatusBadge status={f.status || 'FLAGGED'} /></td>
@@ -631,7 +717,7 @@ function SettingsPage() {
                     <div className="settings-card-title">Merchant Info</div>
                     <div className="setting-row">
                         <span className="setting-label">Merchant Name</span>
-                        <span className="setting-value">MiniPay Demo Merchant</span>
+                        <span className="setting-value">PayNova Demo Merchant</span>
                     </div>
                     <div className="setting-row">
                         <span className="setting-label">Merchant ID</span>
@@ -714,7 +800,6 @@ function App() {
                 }
             } catch (e) {
                 console.error('Failed to fetch stats:', e);
-                // Use placeholder data when backend is offline
                 setStats({ totalOrders: 0, totalPayments: 0, successRate: 0, failedPayments: 0, webhooksSent: 0, fraudFlags: 0 });
             }
             setStatsLoading(false);
@@ -730,7 +815,7 @@ function App() {
     /* --- Get page title for header --- */
     const getPageTitle = () => {
         const item = NAV_ITEMS.find(n => n.id === activePage);
-        return item ? `${item.icon} ${item.label}` : 'Dashboard';
+        return item ? item.label : 'Dashboard';
     };
 
     /* --- Route to correct page --- */
