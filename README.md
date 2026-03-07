@@ -257,11 +257,14 @@ The PayNova dashboard provides a full merchant interface for monitoring and mana
 - PostgreSQL
 - Node.js 18+ (for frontend)
 
-### 1️⃣ Clone the Repository
+### 1️⃣ Clone the Repositories
 
 ```bash
-git clone https://github.com/harsh00789/PayNova.git
-cd PayNova
+# Backend
+git clone https://github.com/harsh00789/payment-gateway.git
+
+# Frontend (Dashboard UI)
+git clone https://github.com/harsh00789/payment-gateway-ui.git
 ```
 
 ### 2️⃣ Start Redis
@@ -273,7 +276,7 @@ docker run -d -p 6379:6379 redis
 ### 3️⃣ Run the Backend
 
 ```bash
-cd payment/payment
+cd payment-gateway/payment/payment
 ./gradlew bootRun
 ```
 
@@ -282,7 +285,7 @@ The API will be available at `http://localhost:8081`
 ### 4️⃣ Run the Frontend
 
 ```bash
-cd payment-gateway-UI2
+cd payment-gateway-ui
 npm install
 npm run dev
 ```
@@ -356,7 +359,7 @@ This project demonstrates:
 ## 👤 Author
 
 **Harsh Thaker**
-Backend Developer
+Software Engineer
 
 [![GitHub](https://img.shields.io/badge/GitHub-harsh00789-181717?style=for-the-badge&logo=github)](https://github.com/harsh00789)
 
@@ -364,6 +367,8 @@ Backend Developer
 
 <div align="center">
 
-**Built with ☕ and ⚡ by [Harsh Thaker](https://github.com/harsh00789)**
+**[Backend Repo](https://github.com/harsh00789/payment-gateway)** · **[Frontend Repo](https://github.com/harsh00789/payment-gateway-ui)**
+
+Built with ☕ and ⚡ by [Harsh Thaker](https://github.com/harsh00789)
 
 </div>
