@@ -806,6 +806,23 @@ function App() {
         })();
     }, [activePage]);
 
+    /* --- Keep-alive: ping backend every 5 min to prevent Render sleep --- */
+    React.useEffect(() => {
+        const PING_INTERVAL = 5 * 60 * 1000; // 5 minutes
+        const ping = async () => {
+            try {
+                const res = await fetch(`${API_BASE}/orders`, { method: 'GET' });
+                console.log(`[Keep-Alive] Pinged backend — ${res.status} ${res.statusText}`);
+            } catch (e) {
+                console.warn('[Keep-Alive] Backend ping failed:', e.message);
+            }
+        };
+        // Ping immediately on mount, then every 5 minutes
+        ping();
+        const id = setInterval(ping, PING_INTERVAL);
+        return () => clearInterval(id);
+    }, []);
+
     /* --- Toast helper --- */
     const showToast = (message, isError = false) => {
         setToast({ show: true, message, isError });
