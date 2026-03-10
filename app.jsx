@@ -107,6 +107,55 @@ const Icons = {
             <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
         </svg>
     ),
+    // Payment method icons
+    upi: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M12 2L2 7l10 5 10-5-10-5z" />
+            <path d="M2 17l10 5 10-5" />
+            <path d="M2 12l10 5 10-5" />
+        </svg>
+    ),
+    card: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2" />
+            <line x1="1" y1="10" x2="23" y2="10" />
+            <line x1="6" y1="15" x2="10" y2="15" />
+        </svg>
+    ),
+    qrCode: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="7" height="7" rx="1" />
+            <rect x="14" y="3" width="7" height="7" rx="1" />
+            <rect x="3" y="14" width="7" height="7" rx="1" />
+            <rect x="14" y="14" width="3" height="3" />
+            <line x1="21" y1="14" x2="21" y2="14.01" />
+            <line x1="21" y1="21" x2="21" y2="21.01" />
+            <line x1="17" y1="18" x2="17" y2="18.01" />
+        </svg>
+    ),
+    bank: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M3 21h18" />
+            <path d="M3 10h18" />
+            <path d="M12 3l9 7H3l9-7z" />
+            <line x1="5" y1="10" x2="5" y2="21" />
+            <line x1="9" y1="10" x2="9" y2="21" />
+            <line x1="15" y1="10" x2="15" y2="21" />
+            <line x1="19" y1="10" x2="19" y2="21" />
+        </svg>
+    ),
+    lock: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0110 0v4" />
+        </svg>
+    ),
+    arrowLeft: (
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12" />
+            <polyline points="12 19 5 12 12 5" />
+        </svg>
+    ),
 };
 
 /* ================= NAVIGATION CONFIG ================= */
@@ -301,6 +350,436 @@ function DashboardPage({ stats, loading }) {
     );
 }
 
+/* ================= PAYMENT MODAL ================= */
+const PAYMENT_METHODS = [
+    { id: 'upi', label: 'UPI', icon: Icons.upi },
+    { id: 'card', label: 'Card', icon: Icons.card },
+    { id: 'qr', label: 'QR Code', icon: Icons.qrCode },
+    { id: 'netbanking', label: 'Net Banking', icon: Icons.bank },
+];
+
+const UPI_APPS = [
+    { id: 'gpay', name: 'Google Pay', color: '#4285F4' },
+    { id: 'phonepe', name: 'PhonePe', color: '#5F259F' },
+    { id: 'paytm', name: 'Paytm', color: '#00BAF2' },
+    { id: 'bhim', name: 'BHIM', color: '#E87C22' },
+    { id: 'amazonpay', name: 'Amazon Pay', color: '#FF9900' },
+    { id: 'cred', name: 'CRED', color: '#1A1A2E' },
+];
+
+const BANKS = [
+    { id: 'sbi', name: 'State Bank of India', code: 'SBI', color: '#22407F' },
+    { id: 'hdfc', name: 'HDFC Bank', code: 'HDFC', color: '#004C8F' },
+    { id: 'icici', name: 'ICICI Bank', code: 'ICICI', color: '#F37A20' },
+    { id: 'axis', name: 'Axis Bank', code: 'AXIS', color: '#97144D' },
+    { id: 'kotak', name: 'Kotak Bank', code: 'KOTAK', color: '#ED1C24' },
+    { id: 'bob', name: 'Bank of Baroda', code: 'BOB', color: '#E35205' },
+    { id: 'pnb', name: 'Punjab National Bank', code: 'PNB', color: '#003399' },
+    { id: 'union', name: 'Union Bank', code: 'UBI', color: '#003087' },
+];
+
+function detectCardType(num) {
+    const n = num.replace(/\s/g, '');
+    if (/^4/.test(n)) return 'VISA';
+    if (/^5[1-5]/.test(n) || /^2[2-7]/.test(n)) return 'MC';
+    if (/^3[47]/.test(n)) return 'AMEX';
+    if (/^6(?:011|5)/.test(n)) return 'DISC';
+    if (/^35/.test(n)) return 'JCB';
+    return null;
+}
+
+function formatCardNumber(val) {
+    const v = val.replace(/\D/g, '').slice(0, 16);
+    return v.replace(/(\d{4})(?=\d)/g, '$1 ');
+}
+
+function PaymentModal({ order, onClose, onSuccess, showToast }) {
+    const [method, setMethod] = React.useState('upi');
+    const [processing, setProcessing] = React.useState(false);
+    const [result, setResult] = React.useState(null); // { success: bool, paymentId, message }
+
+    // UPI state
+    const [upiId, setUpiId] = React.useState('');
+    const [selectedApp, setSelectedApp] = React.useState(null);
+
+    // Card state
+    const [cardNumber, setCardNumber] = React.useState('');
+    const [cardExpiry, setCardExpiry] = React.useState('');
+    const [cardCvv, setCardCvv] = React.useState('');
+    const [cardName, setCardName] = React.useState('');
+
+    // Net Banking state
+    const [selectedBank, setSelectedBank] = React.useState(null);
+
+    // QR timer
+    const [qrTimer, setQrTimer] = React.useState(300);
+    React.useEffect(() => {
+        if (method !== 'qr') return;
+        setQrTimer(300);
+        const interval = setInterval(() => {
+            setQrTimer(prev => {
+                if (prev <= 1) { clearInterval(interval); return 0; }
+                return prev - 1;
+            });
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [method]);
+
+    const orderId = order.id || order.orderId;
+    const amount = order.amount;
+    const currency = order.currency || 'INR';
+
+    const handlePay = async () => {
+        // Validate
+        if (method === 'upi' && !upiId && !selectedApp) {
+            showToast('Please enter UPI ID or select an app', true); return;
+        }
+        if (method === 'card') {
+            if (cardNumber.replace(/\s/g, '').length < 15) { showToast('Please enter a valid card number', true); return; }
+            if (cardExpiry.length < 5) { showToast('Please enter card expiry', true); return; }
+            if (cardCvv.length < 3) { showToast('Please enter CVV', true); return; }
+            if (!cardName.trim()) { showToast('Please enter cardholder name', true); return; }
+        }
+        if (method === 'netbanking' && !selectedBank) {
+            showToast('Please select a bank', true); return;
+        }
+        if (method === 'qr' && qrTimer === 0) {
+            showToast('QR code expired. Please refresh.', true); return;
+        }
+
+        setProcessing(true);
+        try {
+            const idempotencyKey = generateIdempotencyKey();
+            const res = await fetch(`${API_BASE}/process-payment/${orderId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'idempotencyKey': idempotencyKey },
+                body: JSON.stringify({
+                    paymentMethod: method.toUpperCase(),
+                    upiId: method === 'upi' ? (upiId || `user@${selectedApp}`) : undefined,
+                    cardLastFour: method === 'card' ? cardNumber.replace(/\s/g, '').slice(-4) : undefined,
+                    bankCode: method === 'netbanking' ? selectedBank : undefined,
+                })
+            });
+            if (!res.ok) throw new Error(await res.text());
+            const data = await res.json();
+            setResult({
+                success: true,
+                paymentId: data.id || data.paymentId || `pay_${Date.now()}`,
+                message: 'Payment processed successfully!'
+            });
+        } catch (e) {
+            setResult({
+                success: false,
+                paymentId: null,
+                message: e.message || 'Payment failed'
+            });
+        }
+        setProcessing(false);
+    };
+
+    const handleDone = () => {
+        if (result?.success) onSuccess();
+        onClose();
+    };
+
+    const cardType = detectCardType(cardNumber);
+    const formatTimer = (s) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+
+    // Generate a simple QR-like pattern
+    const qrPattern = React.useMemo(() => {
+        const cells = [];
+        for (let i = 0; i < 225; i++) {
+            cells.push(Math.random() > 0.45);
+        }
+        return cells;
+    }, [orderId]);
+
+    // Result screen
+    if (result) {
+        return (
+            <div className="modal-overlay" onClick={handleDone}>
+                <div className="modal-content payment-modal" onClick={e => e.stopPropagation()}>
+                    <div className="result-modal-content">
+                        <div className={`result-modal-icon ${result.success ? 'success' : 'error'}`}>
+                            {result.success ? '✓' : '✕'}
+                        </div>
+                        <h2>{result.success ? 'Payment Successful!' : 'Payment Failed'}</h2>
+                        <p>{result.message}</p>
+                        {result.paymentId && (
+                            <div className="result-id">{result.paymentId}</div>
+                        )}
+                        <div className="payment-result-details">
+                            <div className="payment-result-row">
+                                <span>Amount</span>
+                                <span className="payment-result-value">₹{formatPrice(amount)}</span>
+                            </div>
+                            <div className="payment-result-row">
+                                <span>Method</span>
+                                <span className="payment-result-value">{method.toUpperCase()}</span>
+                            </div>
+                            <div className="payment-result-row">
+                                <span>Order</span>
+                                <span className="payment-result-value">{orderId}</span>
+                            </div>
+                        </div>
+                        <button className="btn btn-primary" onClick={handleDone} style={{ width: '100%', justifyContent: 'center', marginTop: '20px' }}>
+                            Done
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    // Processing overlay
+    if (processing) {
+        return (
+            <div className="modal-overlay">
+                <div className="modal-content payment-modal" onClick={e => e.stopPropagation()}>
+                    <div className="payment-processing">
+                        <div className="payment-processing-spinner">
+                            <div className="payment-processing-ring" />
+                            <div className="payment-processing-icon">{Icons.lock}</div>
+                        </div>
+                        <h3>Processing Payment</h3>
+                        <p>Please wait while we securely process your ₹{formatPrice(amount)} payment...</p>
+                        <div className="payment-processing-steps">
+                            <div className="payment-step active"><span className="payment-step-dot" /> Verifying details</div>
+                            <div className="payment-step"><span className="payment-step-dot" /> Connecting to bank</div>
+                            <div className="payment-step"><span className="payment-step-dot" /> Processing payment</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    return (
+        <div className="modal-overlay" onClick={onClose}>
+            <div className="modal-content payment-modal" onClick={e => e.stopPropagation()}>
+                {/* Header */}
+                <div className="payment-modal-header">
+                    <div className="payment-modal-header-left">
+                        <button className="payment-back-btn" onClick={onClose}>{Icons.arrowLeft}</button>
+                        <div>
+                            <div className="payment-modal-title">Complete Payment</div>
+                            <div className="payment-modal-subtitle">Order #{orderId}</div>
+                        </div>
+                    </div>
+                    <div className="payment-amount-badge">
+                        <span className="payment-amount-currency">{currency}</span>
+                        <span className="payment-amount-value">₹{formatPrice(amount)}</span>
+                    </div>
+                </div>
+
+                {/* Method tabs */}
+                <div className="payment-method-tabs">
+                    {PAYMENT_METHODS.map(m => (
+                        <button
+                            key={m.id}
+                            className={`payment-method-tab ${method === m.id ? 'active' : ''}`}
+                            onClick={() => setMethod(m.id)}
+                            id={`pay-method-${m.id}`}
+                        >
+                            <span className="payment-method-tab-icon">{m.icon}</span>
+                            <span>{m.label}</span>
+                        </button>
+                    ))}
+                </div>
+
+                {/* UPI */}
+                {method === 'upi' && (
+                    <div className="payment-form-section" key="upi">
+                        <div className="payment-section-label">Enter UPI ID</div>
+                        <div className="upi-input-row">
+                            <input
+                                className="form-input upi-input"
+                                type="text"
+                                placeholder="yourname@upi"
+                                value={upiId}
+                                onChange={e => { setUpiId(e.target.value); setSelectedApp(null); }}
+                                id="upi-id-input"
+                            />
+                            <button className="btn btn-primary" onClick={handlePay} disabled={!upiId && !selectedApp}>Verify & Pay</button>
+                        </div>
+                        <div className="payment-divider"><span>or pay using</span></div>
+                        <div className="upi-apps-grid">
+                            {UPI_APPS.map(app => (
+                                <button
+                                    key={app.id}
+                                    className={`upi-app-btn ${selectedApp === app.id ? 'selected' : ''}`}
+                                    onClick={() => { setSelectedApp(app.id); setUpiId(''); }}
+                                    id={`upi-app-${app.id}`}
+                                >
+                                    <div className="upi-app-icon" style={{ background: app.color }}>
+                                        {app.name.charAt(0)}
+                                    </div>
+                                    <span className="upi-app-name">{app.name}</span>
+                                </button>
+                            ))}
+                        </div>
+                        {selectedApp && (
+                            <button className="btn btn-primary" onClick={handlePay} style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}>
+                                Pay ₹{formatPrice(amount)} with {UPI_APPS.find(a => a.id === selectedApp)?.name}
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Card */}
+                {method === 'card' && (
+                    <div className="payment-form-section" key="card">
+                        <div className="card-preview">
+                            <div className="card-preview-chip" />
+                            <div className="card-preview-number">{cardNumber || '•••• •••• •••• ••••'}</div>
+                            <div className="card-preview-bottom">
+                                <div>
+                                    <div className="card-preview-label">CARD HOLDER</div>
+                                    <div className="card-preview-name">{cardName || 'YOUR NAME'}</div>
+                                </div>
+                                <div>
+                                    <div className="card-preview-label">EXPIRES</div>
+                                    <div className="card-preview-name">{cardExpiry || 'MM/YY'}</div>
+                                </div>
+                                {cardType && <div className="card-preview-type">{cardType}</div>}
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Card Number</label>
+                            <input
+                                className="form-input"
+                                type="text"
+                                placeholder="4242 4242 4242 4242"
+                                value={cardNumber}
+                                onChange={e => setCardNumber(formatCardNumber(e.target.value))}
+                                maxLength={19}
+                                id="card-number-input"
+                            />
+                        </div>
+                        <div className="card-row">
+                            <div className="form-group" style={{ flex: 1 }}>
+                                <label className="form-label">Expiry</label>
+                                <input
+                                    className="form-input"
+                                    type="text"
+                                    placeholder="MM/YY"
+                                    value={cardExpiry}
+                                    onChange={e => {
+                                        let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                                        if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
+                                        setCardExpiry(v);
+                                    }}
+                                    maxLength={5}
+                                    id="card-expiry-input"
+                                />
+                            </div>
+                            <div className="form-group" style={{ flex: 1 }}>
+                                <label className="form-label">CVV</label>
+                                <input
+                                    className="form-input"
+                                    type="password"
+                                    placeholder="•••"
+                                    value={cardCvv}
+                                    onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    maxLength={4}
+                                    id="card-cvv-input"
+                                />
+                            </div>
+                        </div>
+                        <div className="form-group">
+                            <label className="form-label">Cardholder Name</label>
+                            <input
+                                className="form-input"
+                                type="text"
+                                placeholder="Name on card"
+                                value={cardName}
+                                onChange={e => setCardName(e.target.value.toUpperCase())}
+                                id="card-name-input"
+                            />
+                        </div>
+                        <button className="btn btn-primary" onClick={handlePay} style={{ width: '100%', justifyContent: 'center', marginTop: '8px' }}>
+                            {Icons.lock} Pay ₹{formatPrice(amount)}
+                        </button>
+                    </div>
+                )}
+
+                {/* QR Code */}
+                {method === 'qr' && (
+                    <div className="payment-form-section" key="qr">
+                        <div className="qr-display">
+                            <div className="qr-scan-ring" />
+                            <div className="qr-code-grid">
+                                {qrPattern.map((filled, i) => (
+                                    <div key={i} className={`qr-cell ${filled ? 'filled' : ''}`} />
+                                ))}
+                            </div>
+                        </div>
+                        <div className="qr-info">
+                            <div className="qr-amount">₹{formatPrice(amount)}</div>
+                            <p className="qr-instruction">Scan with any UPI app to pay</p>
+                            <div className={`qr-timer ${qrTimer < 60 ? 'warning' : ''}`}>
+                                <span className="qr-timer-icon">⏱</span>
+                                Expires in {formatTimer(qrTimer)}
+                            </div>
+                        </div>
+                        {qrTimer === 0 && (
+                            <button className="btn btn-outline" onClick={() => setQrTimer(300)} style={{ width: '100%', justifyContent: 'center', marginTop: '12px' }}>
+                                Refresh QR Code
+                            </button>
+                        )}
+                        <div className="qr-footer">
+                            <div className="qr-footer-step"><span>1</span> Open any UPI app</div>
+                            <div className="qr-footer-step"><span>2</span> Scan the QR code</div>
+                            <div className="qr-footer-step"><span>3</span> Confirm payment</div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Net Banking */}
+                {method === 'netbanking' && (
+                    <div className="payment-form-section" key="netbanking">
+                        <div className="payment-section-label">Select Your Bank</div>
+                        <div className="bank-grid">
+                            {BANKS.map(bank => (
+                                <button
+                                    key={bank.id}
+                                    className={`bank-btn ${selectedBank === bank.id ? 'selected' : ''}`}
+                                    onClick={() => setSelectedBank(bank.id)}
+                                    id={`bank-${bank.id}`}
+                                >
+                                    <div className="bank-icon" style={{ background: bank.color }}>
+                                        {bank.code.charAt(0)}
+                                    </div>
+                                    <div className="bank-name">{bank.code}</div>
+                                </button>
+                            ))}
+                        </div>
+                        {selectedBank && (
+                            <div className="selected-bank-info">
+                                <span>Selected: <strong>{BANKS.find(b => b.id === selectedBank)?.name}</strong></span>
+                            </div>
+                        )}
+                        <button
+                            className="btn btn-primary"
+                            onClick={handlePay}
+                            disabled={!selectedBank}
+                            style={{ width: '100%', justifyContent: 'center', marginTop: '16px' }}
+                        >
+                            Pay ₹{formatPrice(amount)} via Net Banking
+                        </button>
+                    </div>
+                )}
+
+                {/* Security footer */}
+                <div className="payment-security-footer">
+                    <span className="payment-security-icon">{Icons.lock}</span>
+                    <span>Secured by PayNova • 256-bit encryption</span>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 /* ================= ORDERS PAGE ================= */
 function OrdersPage({ showToast }) {
     const [orders, setOrders] = React.useState([]);
@@ -308,6 +787,7 @@ function OrdersPage({ showToast }) {
     const [showModal, setShowModal] = React.useState(false);
     const [formData, setFormData] = React.useState({ amount: '', currency: 'INR', merchantId: '' });
     const [submitting, setSubmitting] = React.useState(false);
+    const [payOrder, setPayOrder] = React.useState(null); // order to pay
 
     const fetchOrders = async () => {
         setLoading(true);
@@ -348,21 +828,6 @@ function OrdersPage({ showToast }) {
             showToast(`Failed: ${e.message}`, true);
         }
         setSubmitting(false);
-    };
-
-    const handlePay = async (orderId) => {
-        try {
-            const idempotencyKey = generateIdempotencyKey();
-            const res = await fetch(`${API_BASE}/process-payment/${orderId}`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'idempotencyKey': idempotencyKey },
-            });
-            if (!res.ok) throw new Error(await res.text());
-            showToast('Payment processed!');
-            fetchOrders();
-        } catch (e) {
-            showToast(`Payment failed: ${e.message}`, true);
-        }
     };
 
     return (
@@ -412,7 +877,7 @@ function OrdersPage({ showToast }) {
                                         <td>{formatDate(o.createdAt)}</td>
                                         <td>
                                             {(o.status === 'CREATED' || !o.status) ? (
-                                                <button className="table-action-btn pay" onClick={() => handlePay(o.id || o.orderId)}>Pay</button>
+                                                <button className="table-action-btn pay" onClick={() => setPayOrder(o)}>Pay</button>
                                             ) : (
                                                 <button className="table-action-btn">View</button>
                                             )}
@@ -425,6 +890,7 @@ function OrdersPage({ showToast }) {
                 </div>
             </div>
 
+            {/* Create Order Modal */}
             {showModal && (
                 <div className="modal-overlay" onClick={() => setShowModal(false)}>
                     <div className="modal-content" onClick={e => e.stopPropagation()}>
@@ -475,6 +941,16 @@ function OrdersPage({ showToast }) {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Payment Modal */}
+            {payOrder && (
+                <PaymentModal
+                    order={payOrder}
+                    onClose={() => setPayOrder(null)}
+                    onSuccess={() => { fetchOrders(); showToast('Payment processed successfully!'); }}
+                    showToast={showToast}
+                />
             )}
         </>
     );
